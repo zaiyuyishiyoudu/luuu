@@ -1,0 +1,58 @@
+#!/bin/bash
+
+info()
+{
+		#获取CPU核心数
+	Core=(`cat /proc/cpuinfo | grep 'core id' | sort -u | wc -l`)
+
+		#获取CPU线程数
+	Thread=(`cat /proc/cpuinfo | grep 'processor' | wc -l`)
+
+		#获取CPU工作频率
+	MHz=(`grep 'MHz' /proc/cpuinfo | cut -c12- |sed -n '1p'`)
+
+		#获取CPU核心1温度
+	a=(`sensors | grep 'Core 0' | cut -c15-22`)
+
+		#获取CPU核心2温度
+	b=(`sensors | grep 'Core 1' | cut -c15-22`)
+
+		#获取CPU核心3温度
+	c=(`sensors | grep 'Core 2' | cut -c15-22`)
+
+		#获取CPU核心4温度
+	d=(`sensors | grep 'Core 3' | cut -c15-22`)
+
+		#获取CPU核心5温度
+	e=(`sensors | grep 'Core 4' | cut -c15-22`)
+
+		#获取CPU核心6温度
+	f=(`sensors | grep 'Core 5' | cut -c15-22`)
+
+		#获取CPU核心7温度
+	g=(`sensors | grep 'Core 6' | cut -c15-22`)
+
+		#获取CPU核心8温度
+	h=(`sensors | grep 'Core 7' | cut -c15-22`)
+
+		#获取CPU核心9温度
+	i=(`sensors | grep 'Core 8' | cut -c15-22`)
+
+		#获取CPU核心10温度
+	j=(`sensors | grep 'Core 9' | cut -c15-22`)
+
+		#获取CPU核心11温度
+	k=(`sensors | grep 'Core 10' | cut -c15-22`)
+
+		#获取CPU核心12温度
+	l=(`sensors | grep 'Core 11' | cut -c15-22`)
+}
+
+out()
+{
+	info
+	echo "$Core核心 $Thread线程 $MHz MHz $a $b $c $d $e $f $g $h $h $i $j $k $l"
+}
+
+out
+
