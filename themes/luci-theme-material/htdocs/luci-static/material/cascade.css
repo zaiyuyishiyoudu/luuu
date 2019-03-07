@@ -132,8 +132,7 @@ select {
 }
 
 select,
-input,
-.cbi-dropdown {
+input {
     background-color: transparent;
     color: rgba(0, 0, 0, .87);
     border: none;
@@ -149,7 +148,7 @@ input,
 
 select:not([multiple="multiple"]):focus,
 input:focus {
-    border-color: #0099CC;
+    border-color: #00BFFF;
 }
 
 select[multiple="multiple"] {
@@ -157,7 +156,7 @@ select[multiple="multiple"] {
 }
 
 code {
-    color: #0099CC;
+    color: #00BFFF;
 }
 
 abbr {
@@ -281,7 +280,7 @@ footer > a {
 }
 
 header {
-    background: #0099CC;
+    background: #00BFFF;
     color: white;
 }
 
@@ -304,18 +303,14 @@ header > .fill > .container > .brand {
 }
 
 .warning {
-    background-color:  #F0E68C !important;
-    color: black;
+    background-color: #FF7D60 !important;
+    color: #FFF;
 }
 
-.success {
-    background-color: #90EE90 !important;
-    color: black;
-}
-
+.errorbox,
 .alert-message {
     margin: 2rem 0 0 0;
-    padding: 1rem;
+    padding: 2rem;
     border: 0;
     font-weight: normal;
     font-style: normal;
@@ -363,7 +358,7 @@ header > .fill > .container > .brand {
     font-size: 0.9rem;
     line-height: 1.42857143;
     color: #fff;
-    background-color: #5bc0de;
+    background-color: #1E90FF;
     border-color: #46b8da;
     margin-top: 2rem;
     text-decoration: inherit;
@@ -406,7 +401,7 @@ header > .fill > .container > .brand {
 
 .main > .main-left > .nav > li:hover,
 .main > .main-left > .nav > .slide > .menu:hover {
-    background: #D4D4D4;
+    background: #E6E6FA;
 }
 
 .main > .main-left > .nav > .slide:hover {
@@ -418,7 +413,7 @@ header > .fill > .container > .brand {
 }
 
 .main > .main-left > .nav > .slide > .slide-menu > .active {
-    background-color: #0099CC;
+    background-color: #00BFFF;
 }
 
 .main > .main-left > .nav > .slide > .slide-menu > li > a {
@@ -431,11 +426,11 @@ header > .fill > .container > .brand {
 }
 
 .main > .main-left > .nav > .slide > .slide-menu > li:hover {
-    background: #D4D4D4;
+    background: #E6E6FA;
 }
 
 .main > .main-left > .nav > .slide > .slide-menu > .active:hover {
-    background-color: #0099CC;
+    background-color: #00BFFF;
     cursor: hand;
 }
 
@@ -549,30 +544,8 @@ table > tbody > tr > td, table > tbody > tr > th, table > tfoot > tr > td, table
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .16), 0 0 2px 0 rgba(0, 0, 0, .12);
 }
 
-.cbi-section-table-row:last-child {
-    margin-bottom: 0;
-}
-
-.cbi-section-table-row > .cbi-value-field .cbi-input-select,
-.cbi-section-table-row > .cbi-value-field .cbi-input-text,
-.cbi-section-table-row > .cbi-value-field .cbi-input-password,
-.cbi-section-table-row > .cbi-value-field .cbi-dropdown {
-    width: 100%;
-}
-
-.cbi-section-table-row > .cbi-value-field [data-dynlist] > input,
-.cbi-section-table-row > .cbi-value-field input.cbi-input-password {
-    width: calc(100% - 1.5rem);
-}
-
-div > table > tbody > tr:nth-of-type(2n),
-div > .table > .tbody > .tr:nth-of-type(2n) {
-    background-color: #f9f9f9;
-}
-
-div > table > tbody > tr:nth-of-type(2n),
-div > .table > .tbody > .tr:nth-of-type(2n) {
-    background-color: #f9f9f9;
+fieldset > table > tbody > tr:nth-of-type(2n) {
+    background-color: #F0F8FF;
 }
 
 /* fix progress bar */
@@ -593,7 +566,7 @@ div > .table > .tbody > .tr:nth-of-type(2n) {
 #conns > div > div,
 #memtotal > div > div {
     height: 100% !important;
-    background-color: #0099CC !important;
+    background-color: #00BFFF !important;
 }
 
 /* fix multiple table */
@@ -728,8 +701,8 @@ td > table > tbody > tr > td,
 .cbi-button-add,
 .cbi-button-save,
 .cbi-button-positive {
-    color: #46b8da;
-    border: 1px solid #46b8da;
+    color: #ff69b4;
+    border: 1px solid #ff69b4;
     background-color: transparent;
 }
 
@@ -774,13 +747,13 @@ td > table > tbody > tr > td,
 .tabs > li[class~="active"],
 .tabs > li:hover {
     cursor: pointer;
-    border-bottom: 0.2rem solid #0099CC;
-    color: #0099CC;
+    border-bottom: 0.2rem solid #00BFFF;
+    color: #00BFFF;
     margin-bottom: -0.18751rem;
 }
 
 .tabs > li[class~="active"] > a {
-    color: #0099cc;
+    color: #00BFFF;
 }
 
 .tabs > li:hover {
@@ -788,9 +761,9 @@ td > table > tbody > tr > td,
 }
 
 .cbi-tabmenu {
-    border-top: 1px solid #D4D4D4;
-    border-left: 1px solid #D4D4D4;
-    border-right: 1px solid #D4D4D4;
+    border-top: 1px solid #1E90FF;
+    border-left: 1px solid #1E90FF;
+    border-right: 1px solid #1E90FF;
 }
 
 .cbi-tabmenu > li:hover {
@@ -802,24 +775,24 @@ td > table > tbody > tr > td,
 }
 
 .cbi-tabmenu {
-    background-color: #D4D4D4;
+    background-color: #F5FFFA;
 }
 
 .cbi-section-remove:nth-of-type(2n),
 .cbi-section-node:nth-of-type(2n){
-    background-color: #f9f9f9;
+    background-color: #F0F8FF;
 }
 
 .cbi-section-node-tabbed {
     padding: 0;
     margin-top: 0;
-    border-bottom: 1px solid #D4D4D4;
-    border-left: 1px solid #D4D4D4;
-    border-right: 1px solid #D4D4D4;
+    border-bottom: 1px solid #FF1493;
+    border-left: 1px solid #FF1493;
+    border-right: 1px solid #FF1493;
 }
 
 .cbi-tabcontainer > .cbi-value:nth-of-type(2n) {
-    background-color: #f9f9f9;
+    background-color: #F0F8FF;
 }
 
 .cbi-value-field,
@@ -1262,7 +1235,7 @@ td > .ifacebadge,
 .uci-change-list del,
 .uci-change-legend-label del {
     text-decoration: none;
-    border: 1px solid #FF0000;
+    border: 1px solid #ADFF2F;
     background-color: #FFCCCC;
     display: block;
     font-style: normal;
@@ -1529,7 +1502,7 @@ header > .container > .pull-right > * {
 }
 
 #xhr_poll_status > .label.success {
-    background-color: #14CE14;
+    background-color: #FF69B4;
 }
 
 .label {
@@ -1548,7 +1521,7 @@ header > .container > .pull-right > * {
 }
 
 .notice {
-    background-color: #5BC0DE;
+    background-color: #9e8aff;#加载
 }
 
 .showSide {

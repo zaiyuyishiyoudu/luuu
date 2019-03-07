@@ -7,6 +7,8 @@ m = Map("hd-idle", translate("HDD Idle"),
 	translate("HDD Idle is a utility program for spinning-down external " ..
 		"disks after a period of idle time."))
 
+m:section(SimpleSection).template  = "hd_idle/hd-idle_status"
+
 s = m:section(TypedSection, "hd-idle", translate("Settings"))
 s.anonymous = true
 

@@ -32,7 +32,7 @@
 		networks.push(n.getAttribute('data-network'));
 	});
 
-	XHR.poll(5, '<%=url('admin/network/wireless_status')%>/' + networks.join(','), null,
+	XHR.poll(1, '<%=url('admin/network/wireless_status')%>/' + networks.join(','), null,
 		function(x, st)
 		{
 			if (st)

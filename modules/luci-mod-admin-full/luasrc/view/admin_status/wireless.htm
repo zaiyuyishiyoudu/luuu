@@ -164,11 +164,11 @@
 					label_25_2.parentNode.appendChild(text2);
 				}
 
-				label_scale.innerHTML = String.format('<%:(%d minute window, %d second interval)%>', data_wanted / 60, 3);
-				label_scale_2.innerHTML = String.format('<%:(%d minute window, %d second interval)%>', data_wanted / 60, 3);
+				label_scale.innerHTML = String.format('<%:(%d minute window, %d second interval)%>', data_wanted / 60, 1);
+				label_scale_2.innerHTML = String.format('<%:(%d minute window, %d second interval)%>', data_wanted / 60, 1);
 
 				/* render datasets, start update interval */
-				XHR.poll(3, '<%=build_url("admin/status/realtime/wireless_status", curdev)%>', null,
+				XHR.poll(1, '<%=build_url("admin/status/realtime/wireless_status", curdev)%>', null,
 					function(x, data)
 					{
 						var noise_floor = 255;

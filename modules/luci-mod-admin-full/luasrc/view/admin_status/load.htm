@@ -125,10 +125,10 @@
 					label_25.parentNode.appendChild(text);
 				}
 
-				label_scale.innerHTML = String.format('<%:(%d minute window, %d second interval)%>', data_wanted / 60, 3);
+				label_scale.innerHTML = String.format('<%:(%d minute window, %d second interval)%>', data_wanted / 60, 1);
 
 				/* render datasets, start update interval */
-				XHR.poll(3, '<%=build_url("admin/status/realtime/load_status")%>', null,
+				XHR.poll(1, '<%=build_url("admin/status/realtime/load_status")%>', null,
 					function(x, data)
 					{
 						var data_max   = 0;

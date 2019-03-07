@@ -26,6 +26,10 @@
 		shared = 0
 	}
 
+	local cpu_info = luci.sys.exec("cpuinfo")
+
+	local eth_info = luci.sys.exec("ethinfo")
+
 	local swapinfo = sysinfo.swap or {
 		total = 0,
 		free = 0
@@ -49,6 +53,8 @@
 			uptime     = sysinfo.uptime or 0,
 			localtime  = os.date(),
 			loadavg    = sysinfo.load or { 0, 0, 0 },
+			cpuinfo    = cpu_info,
+			ethinfo    = eth_info,
 			memory     = meminfo,
 			swap       = swapinfo,
 			connmax    = conn_max,
@@ -169,7 +175,7 @@
 		]);
 	}
 
-	XHR.poll(5, '<%=REQUEST_URI%>', { status: 1 },
+	XHR.poll(1, '<%=REQUEST_URI%>', { status: 1 },
 		function(x, info)
 		{
 			var us = document.getElementById('upstream_status_table');
@@ -314,6 +320,23 @@
 			if (e = document.getElementById('localtime'))
 				e.innerHTML = info.localtime;
 
+			if (e = document.getElementById('cpuinfo'))
+				e.innerHTML = info.cpuinfo;
+
+			if (e = document.getElementById('ethinfo'))			{
+				var ports = eval('(' + info.ethinfo + ')');
+				var tmp = "";
+				for (var i in ports)
+				{
+					tmp = tmp + String.format(
+							'<td style="text-align:center"><span style="line-height:25px">%s</span><br /><small><img src="<%=resource%>/icons/%s" /><br />%s<br />%s</small></td>',							ports[i].name,
+							ports[i].status ? 'port_up.png' : 'port_down.png',
+							ports[i].speed,
+							ports[i].duplex ? '<%:full-duplex%>' : '<%:half-duplex%>');
+				};
+				e.innerHTML = "<tr>" + tmp + "</tr>";
+			}
+
 			if (e = document.getElementById('uptime'))
 				e.innerHTML = String.format('%t', info.uptime);
 
@@ -327,32 +350,32 @@
 
 			if (e = document.getElementById('memtotal'))
 				e.innerHTML = progressbar(
-					((info.memory.free + info.memory.buffered) / 1024) + " <%:kB%>",
-					(info.memory.total / 1024) + " <%:kB%>"
+					Math.floor((info.memory.free + info.memory.buffered) / 1048576) + " <%:MB%>",
+					Math.floor(info.memory.total / 1048576) + " <%:MB%>"
 				);
 
-			if (e = document.getElementById('memfree'))
+		if (e = document.getElementById('memfree'))
 				e.innerHTML = progressbar(
-					(info.memory.free / 1024) + " <%:kB%>",
-					(info.memory.total / 1024) + " <%:kB%>"
+					Math.floor(info.memory.free / 1048576) + " <%:MB%>",
+					Math.floor(info.memory.total / 1048576) + " <%:MB%>"
 				);
 
 			if (e = document.getElementById('membuff'))
 				e.innerHTML = progressbar(
-					(info.memory.buffered / 1024) + " <%:kB%>",
-					(info.memory.total / 1024) + " <%:kB%>"
+					Math.floor(info.memory.buffered / 1048576) + " <%:MB%>",
+					Math.floor(info.memory.total / 1048576) + " <%:MB%>"
 				);
 
 			if (e = document.getElementById('swaptotal'))
 				e.innerHTML = progressbar(
-					(info.swap.free / 1024) + " <%:kB%>",
-					(info.swap.total / 1024) + " <%:kB%>"
+					Math.floor(info.swap.free / 1048576) + " <%:MB%>",
+					Math.floor(info.swap.total / 1048576) + " <%:MB%>"
 				);
 
 			if (e = document.getElementById('swapfree'))
 				e.innerHTML = progressbar(
-					(info.swap.free / 1024) + " <%:kB%>",
-					(info.swap.total / 1024) + " <%:kB%>"
+					Math.floor(info.swap.free / 1048576) + " <%:MB%>",
+					Math.floor(info.swap.total / 1048576) + " <%:MB%>"
 				);
 
 			if (e = document.getElementById('conns'))
@@ -364,47 +387,54 @@
 
 <h2 name="content"><%:Status%></h2>
 
-<div class="cbi-section">
-	<h3><%:System%></h3>
+<fieldset class="cbi-section">
+	<legend><%:System%></legend>
 
-	<div class="table" width="100%">
-		<div class="tr"><div class="td left" width="33%"><%:Hostname%></div><div class="td left"><%=luci.sys.hostname() or "?"%></div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Model%></div><div class="td left"><%=pcdata(boardinfo.model or "?")%></div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Architecture%></div><div class="td left"><%=pcdata(boardinfo.system or "?")%></div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Firmware Version%></div><div class="td left">
+	<table width="100%" cellspacing="10">
+		<tr><td width="33%"><%:Hostname%></td><td><%=luci.sys.hostname() or "?"%></td></tr>
+		<tr><td width="33%"><%:Model%></td><td><%=pcdata(boardinfo.model or "?")%></td></tr>
+		<tr><td width="33%"><%:Architecture%></td><td><%=pcdata(boardinfo.system or "?")%></td></tr>
+		<tr><td width="33%"><%:CPU Info%></td><td id="cpuinfo">-</td></tr>
+
+		<tr><td width="33%"><%:Firmware Version%></td><td>
 			<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%> /
 			<%=pcdata(ver.luciname)%> (<%=pcdata(ver.luciversion)%>)
-		</div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Kernel Version%></div><div class="td left"><%=unameinfo.release or "?"%></div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Local Time%></div><div class="td left" id="localtime">-</div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Uptime%></div><div class="td left" id="uptime">-</div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Load Average%></div><div class="td left" id="loadavg">-</div></div>
-	</div>
-</div>
+		</td></tr>
+		<tr><td width="33%"><%:Kernel Version%></td><td><%=unameinfo.release or "?"%></td></tr>
+		<tr><td width="33%"><%:Local Time%></td><td id="localtime">-</td></tr>
+		<tr><td width="33%"><%:Uptime%></td><td id="uptime">-</td></tr>
+		<tr><td width="33%"><%:Load Average%></td><td id="loadavg">-</td></tr>
+	</table>
+</fieldset>
 
-<div class="cbi-section">
-	<h3><%:Memory%></h3>
+<fieldset class="cbi-section">
+	<legend><%:Memory%></legend>
 
-	<div class="table" width="100%">
-		<div class="tr"><div class="td left" width="33%"><%:Total Available%></div><div class="td left" id="memtotal">-</div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Free%></div><div class="td left" id="memfree">-</div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Buffered%></div><div class="td left" id="membuff">-</div></div>
-	</div>
-</div>
+	<table width="100%" cellspacing="10">
+		<tr><td width="33%"><%:Total Available%></td><td id="memtotal">-</td></tr>
+		<tr><td width="33%"><%:Free%></td><td id="memfree">-</td></tr>
+		<tr><td width="33%"><%:Buffered%></td><td id="membuff">-</td></tr>
+	</table>
+</fieldset>
 
 <% if swapinfo.total > 0 then %>
-<div class="cbi-section">
-	<h3><%:Swap%></h3>
+<fieldset class="cbi-section">
+	<legend><%:Swap%></legend>
 
-	<div class="table" width="100%">
-		<div class="tr"><div class="td left" width="33%"><%:Total Available%></div><div class="td left" id="swaptotal">-</div></div>
-		<div class="tr"><div class="td left" width="33%"><%:Free%></div><div class="td left" id="swapfree">-</div></div>
-	</div>
-</div>
+	<table width="100%" cellspacing="10">
+		<tr><td width="33%"><%:Total Available%></td><td id="swaptotal">-</td></tr>
+		<tr><td width="33%"><%:Free%></td><td id="swapfree">-</td></tr>
+	</table>
+</fieldset>
 <% end %>
 
-<div class="cbi-section">
-	<h3><%:Network%></h3>
+<% if swapinfo.total > 0 then %>
+<fieldset class="cbi-section">
+	<legend><%:ETH INFO%></legend>
+	<table width="100%" cellspacing="10" id="ethinfo">
+	</table>
+</fieldset>
+<% end %>
 
 	<div id="upstream_status_table" class="network-status-table">
 		<p><em><%:Collecting data...%></em></p>
@@ -446,17 +476,5 @@
 	<%+admin_network/wifi_assoclist%>
 </div>
 <% end %>
-
-<%-
-	local incdir = util.libpath() .. "/view/admin_status/index/"
-	if fs.access(incdir) then
-		local inc
-		for inc in fs.dir(incdir) do
-			if inc:match("%.htm$") then
-				include("admin_status/index/" .. inc:gsub("%.htm$", ""))
-			end
-		end
-	end
--%>
 
 <%+footer%>
