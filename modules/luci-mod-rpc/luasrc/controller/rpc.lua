@@ -14,6 +14,7 @@ function session_retrieve(sid, allowed_users)
 	if type(sdat) == "table" and
 	   type(sdat.values) == "table" and
 	   type(sdat.values.token) == "string" and
+	   type(sdat.values.secret) == "string" and
 	   type(sdat.values.username) == "string" and
 	   util.contains(allowed_users, sdat.values.username)
 	then
@@ -55,7 +56,6 @@ function index()
 end
 
 function rpc_auth()
-	local ctrl    = require "luci.controller.rpc"
 	local jsonrpc = require "luci.jsonrpc"
 	local http    = require "luci.http"
 	local sys     = require "luci.sys"
@@ -77,7 +77,8 @@ function rpc_auth()
 			util.ubus("session", "set", {
 				ubus_rpc_session = login.ubus_rpc_session,
 				values = {
-					token = sys.uniqueid(16)
+					token = sys.uniqueid(16),
+					secret = sys.uniqueid(16)
 				}
 			})
 
@@ -85,7 +86,8 @@ function rpc_auth()
 			if sdat then
 				return {
 					sid = sid,
-					token = sdat.token
+					token = sdat.token,
+					secret = sdat.secret
 				}
 			end
 		end

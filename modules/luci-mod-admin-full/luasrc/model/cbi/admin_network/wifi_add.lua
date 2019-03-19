@@ -94,9 +94,14 @@ function newnet.parse(self, section)
 	local net, zone
 
 	if has_firewall then
-		local value = fwzone:formvalue(section)
-		if value and #value > 0 then
-			zone = fw:get_zone(value) or fw:add_zone(value)
+		local zval  = fwzone:formvalue(section)
+		zone = fw:get_zone(zval)
+
+		if not zone and zval == '-' then
+			zval = m:formvalue(fwzone:cbid(section) .. ".newzone")
+			if zval and #zval > 0 then
+				zone = fw:add_zone(zval)
+			end
 		end
 	end
 

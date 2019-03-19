@@ -74,7 +74,7 @@ function action_packages()
 	local out, err
 
 	-- Display
-	local display = luci.http.formvalue("display") or "available"
+	local display = luci.http.formvalue("display") or "installed"
 
 	-- Letter
 	local letter = string.byte(luci.http.formvalue("letter") or "A", 1)
@@ -341,17 +341,9 @@ function action_restore()
 
 	local upload = http.formvalue("archive")
 	if upload and #upload > 0 then
-		if os.execute("gunzip -t %q >/dev/null 2>&1" % archive_tmp) == 0 then
-			luci.template.render("admin_system/applyreboot")
-			os.execute("tar -C / -xzf %q >/dev/null 2>&1" % archive_tmp)
-			luci.sys.reboot()
-		else
-			luci.template.render("admin_system/flashops", {
-				reset_avail   = supports_reset(),
-				upgrade_avail = supports_sysupgrade(),
-				backup_invalid = true
-			})
-		end
+		luci.template.render("admin_system/applyreboot")
+		os.execute("tar -C / -xzf %q >/dev/null 2>&1" % archive_tmp)
+		luci.sys.reboot()
 		return
 	end
 

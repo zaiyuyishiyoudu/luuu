@@ -43,7 +43,6 @@ XHR = function()
 	{
 		this.reinit();
 
-		var ts   = Date.now();
 		var xhr  = this._xmlHttp;
 		var code = this._encode(data);
 
@@ -65,11 +64,15 @@ XHR = function()
 			if (xhr.readyState == 4) {
 				var json = null;
 				if (xhr.getResponseHeader("Content-Type") == "application/json") {
-					try { json = JSON.parse(xhr.responseText); }
-					catch(e) { json = null; }
+					try {
+						json = eval('(' + xhr.responseText + ')');
+					}
+					catch(e) {
+						json = null;
+					}
 				}
 
-				callback(xhr, json, Date.now() - ts);
+				callback(xhr, json);
 			}
 		}
 
@@ -80,21 +83,13 @@ XHR = function()
 	{
 		this.reinit();
 
-		var ts   = Date.now();
 		var xhr  = this._xmlHttp;
 		var code = this._encode(data);
 
 		xhr.onreadystatechange = function()
 		{
-			if (xhr.readyState == 4) {
-				var json = null;
-				if (xhr.getResponseHeader("Content-Type") == "application/json") {
-					try { json = JSON.parse(xhr.responseText); }
-					catch(e) { json = null; }
-				}
-
-				callback(xhr, json, Date.now() - ts);
-			}
+			if (xhr.readyState == 4)
+				callback(xhr);
 		}
 
 		xhr.open('POST', url, true);
@@ -193,7 +188,7 @@ XHR.poll = function(interval, url, data, callback, post)
 			for (var i = 0, e = XHR._q[0]; i < XHR._q.length; e = XHR._q[++i])
 			{
 				if (!(XHR._t % e.interval) && !e.xhr.busy())
-					e.xhr[post ? 'post' : 'get'](e.url, e.data, e.callback, e.interval * 1000 * 5 - 5);
+					e.xhr[post ? 'post' : 'get'](e.url, e.data, e.callback, e.interval * 1000 - 5);
 			}
 
 			XHR._t++;
@@ -209,6 +204,7 @@ XHR.poll = function(interval, url, data, callback, post)
 	};
 
 	XHR._q.push(e);
+	XHR.run();
 
 	return e;
 }
@@ -264,5 +260,3 @@ XHR.running = function()
 {
 	return !!(XHR._r && XHR._i);
 }
-
-document.addEventListener('DOMContentLoaded', XHR.run);

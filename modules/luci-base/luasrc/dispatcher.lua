@@ -182,7 +182,6 @@ local function session_retrieve(sid, allowed_users)
 	   (not allowed_users or
 	    util.contains(allowed_users, sdat.values.username))
 	then
-		uci:set_session_id(sid)
 		return sid, sdat.values
 	end
 
@@ -315,7 +314,7 @@ function dispatch(request)
 			assert(media, "No valid theme found")
 		end
 
-		local function _ifattr(cond, key, val, noescape)
+		local function _ifattr(cond, key, val)
 			if cond then
 				local env = getfenv(3)
 				local scope = (type(env.self) == "table") and env.self
@@ -326,16 +325,13 @@ function dispatch(request)
 						val = util.serialize_json(val)
 					end
 				end
-
-				val = tostring(val or
-					(type(env[key]) ~= "function" and env[key]) or
-					(scope and type(scope[key]) ~= "function" and scope[key]) or "")
-
-				if noescape ~= true then
-					val = util.pcdata(val)
-				end
-
-				return string.format(' %s="%s"', tostring(key), val)
+				return string.format(
+					' %s="%s"', tostring(key),
+					util.pcdata(tostring( val
+					 or (type(env[key]) ~= "function" and env[key])
+					 or (scope and type(scope[key]) ~= "function" and scope[key])
+					 or "" ))
+				)
 			else
 				return ''
 			end
@@ -361,7 +357,7 @@ function dispatch(request)
 			elseif key == "REQUEST_URI" then
 				return build_url(unpack(ctx.requestpath))
 			elseif key == "FULL_REQUEST_URI" then
-				local url = { http.getenv("SCRIPT_NAME") or "", http.getenv("PATH_INFO") }
+				local url = { http.getenv("SCRIPT_NAME"), http.getenv("PATH_INFO") }
 				local query = http.getenv("QUERY_STRING")
 				if query and #query > 0 then
 					url[#url+1] = "?"
@@ -510,11 +506,10 @@ function dispatch(request)
 		else
 			ok, err = util.copcall(target, unpack(args))
 		end
-		if not ok then
-			error500("Failed to execute " .. (type(c.target) == "function" and "function" or c.target.type or "unknown") ..
-			         " dispatcher target for entry '/" .. table.concat(request, "/") .. "'.\n" ..
-			         "The called action terminated with an exception:\n" .. tostring(err or "(unknown)"))
-		end
+		assert(ok,
+		       "Failed to execute " .. (type(c.target) == "function" and "function" or c.target.type or "unknown") ..
+		       " dispatcher target for entry '/" .. table.concat(request, "/") .. "'.\n" ..
+		       "The called action terminated with an exception:\n" .. tostring(err or "(unknown)"))
 	else
 		local root = node()
 		if not root or not root.target then
@@ -706,22 +701,15 @@ function _create_node(path)
 		local last = table.remove(path)
 		local parent = _create_node(path)
 
-		c = {nodes={}, auto=true, inreq=true}
-
-		local _, n
-		for _, n in ipairs(path) do
-			if context.path[_] ~= n then
-				c.inreq = false
-				break
-			end
+		c = {nodes={}, auto=true}
+		-- the node is "in request" if the request path matches
+		-- at least up to the length of the node path
+		if parent.inreq and context.path[#path+1] == last then
+		  c.inreq = true
 		end
-
-		c.inreq = c.inreq and (context.path[#path + 1] == last)
-
 		parent.nodes[last] = c
 		context.treecache[name] = c
 	end
-
 	return c
 end
 
@@ -922,6 +910,7 @@ local function _cbi(self, ...)
 	for i, res in ipairs(maps) do
 		res:render({
 			firstmap   = (i == 1),
+			applymap   = applymap,
 			redirect   = redirect,
 			messages   = messages,
 			pageaction = pageaction,
@@ -931,12 +920,11 @@ local function _cbi(self, ...)
 
 	if not config.nofooter then
 		tpl.render("cbi/footer", {
-			flow          = config,
-			pageaction    = pageaction,
-			redirect      = redirect,
-			state         = state,
-			autoapply     = config.autoapply,
-			trigger_apply = applymap
+			flow       = config,
+			pageaction = pageaction,
+			redirect   = redirect,
+			state      = state,
+			autoapply  = config.autoapply
 		})
 	end
 end
